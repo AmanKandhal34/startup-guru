@@ -1,65 +1,165 @@
-import Image from "next/image";
+"use client";
+import { useState, useRef, useEffect } from "react";
+
+type ChatMessage = {
+    role: "bot" | "user";
+    text: string;
+};
 
 export default function Home() {
-  return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    const [message, setMessage] = useState("");
+    const [ideaMemory, setIdeaMemory] = useState("");
+    const [chat, setChat] = useState<ChatMessage[]>([
+        {
+            role: "bot",
+            text: "Welcome to Startup Guru.\nPitch your startup idea in 2-3 lines and I will score it, map risks, and give an MVP plan.",
+        },
+    ]);
+    const [loading, setLoading] = useState(false);
+
+    const chatEndRef = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+        chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, [chat]);
+
+    const sendMessage = async () => {
+        if (!message.trim()) return;
+
+        const userMessage = message;
+
+        setChat((prev) => [...prev, { role: "user", text: userMessage }]);
+        setMessage("");
+        setLoading(true);
+        setIdeaMemory(userMessage);
+
+        try {
+            const res = await fetch("/api/chat", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    message: userMessage,
+                    idea: ideaMemory || userMessage,
+                }),
+            });
+
+            let data: { reply?: string } = {};
+            try {
+                data = await res.json();
+            } catch {
+                data = {};
+            }
+
+            if (!res.ok) {
+                setChat((prev) => [
+                    ...prev,
+                    {
+                        role: "bot",
+                        text: data.reply || "I hit a snag while analyzing that. Please try again in a moment.",
+                    },
+                ]);
+                return;
+            }
+
+            setChat((prev) => [
+                ...prev,
+                { role: "bot", text: data.reply || "No response received." },
+            ]);
+        } catch (err) {
+            setChat((prev) => [
+                ...prev,
+                {
+                    role: "bot",
+                    text: "Unable to reach server. Please check if the app is running and try again.",
+                },
+            ]);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const resetChat = () => {
+        setIdeaMemory("");
+        setChat([
+            {
+                role: "bot",
+                text: "New chat started. Share your startup idea and I will break it down like an investor memo.",
+            },
+        ]);
+    };
+
+    return (
+        <div className="chat-shell">
+            <aside className="chat-sidebar">
+                <button onClick={resetChat} className="new-chat-btn">
+                    + New chat
+                </button>
+
+                <div className="chat-history">
+                    <p className="history-title">Recent</p>
+                    <button className="history-item" type="button">Startup score breakdown</button>
+                    <button className="history-item" type="button">Pricing strategy check</button>
+                    <button className="history-item" type="button">MVP launch plan</button>
+                </div>
+
+                <p className="sidebar-footer">Startup Guru v1</p>
+            </aside>
+
+            <main className="chat-main">
+                <header className="chat-topbar">
+                    <div>
+                        <p className="topbar-title">Startup Guru</p>
+                        <p className="topbar-subtitle">Advisor mode</p>
+                    </div>
+                    <button onClick={resetChat} className="mobile-new-chat" type="button">
+                        New chat
+                    </button>
+                </header>
+
+                <section className="chat-scroll">
+                    {chat.map((msg, i) => (
+                        <div key={i} className={`msg-row ${msg.role === "user" ? "user" : "bot"}`}>
+                            <div className={`msg-bubble ${msg.role === "user" ? "user-bubble" : "bot-bubble"}`}>
+                                {msg.text}
+                            </div>
+                        </div>
+                    ))}
+
+                    {loading && (
+                        <div className="loading-row">
+                            <span>Thinking</span>
+                            <span className="dot"></span>
+                            <span className="dot dot-delay-1"></span>
+                            <span className="dot dot-delay-2"></span>
+                        </div>
+                    )}
+
+                    <div ref={chatEndRef} />
+                </section>
+
+                <footer className="chat-composer-wrap">
+                    <div className="chat-composer">
+                        <input
+                            className="chat-input"
+                            placeholder="Message Startup Guru..."
+                            value={message}
+                            onChange={(e) => setMessage(e.target.value)}
+                            onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+                        />
+                        <button
+                            onClick={sendMessage}
+                            disabled={loading || !message.trim()}
+                            className="send-btn"
+                            type="button"
+                        >
+                            Send
+                        </button>
+                    </div>
+                    <p className="composer-note">Startup Guru can make mistakes. Verify key assumptions.</p>
+                </footer>
+            </main>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
-  );
+    );
 }
