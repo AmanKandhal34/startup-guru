@@ -67,7 +67,7 @@ npm run dev
 Visit:
 
 ```
-http://localhost:3000
+https://startup-guru-mxjr.vercel.app/
 ```
 
 ---
