@@ -8,10 +8,10 @@ export async function POST(req) {
         const message = body?.message?.trim();
 
         if (!process.env.OPENROUTER_API_KEY) {
-            return new Response(JSON.stringify({ reply }), {
-  status: 200,
-  headers: { "Content-Type": "application/json" }
-});
+    return new Response(JSON.stringify({ reply }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" }
+    });
         }
 
         if (!message) {
