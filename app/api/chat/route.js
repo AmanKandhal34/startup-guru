@@ -8,10 +8,10 @@ export async function POST(req) {
         const message = body?.message?.trim();
 
         if (!process.env.OPENROUTER_API_KEY) {
-            return new Response(
-                JSON.stringify({ reply: "Missing OPENROUTER_API_KEY." }),
-                { status: 500 }
-            );
+            return new Response(JSON.stringify({ reply }), {
+  status: 200,
+  headers: { "Content-Type": "application/json" }
+});
         }
 
         if (!message) {
@@ -33,7 +33,7 @@ export async function POST(req) {
         const completion = await client.chat.completions.create({
             model: process.env.OPENROUTER_MODEL || "openai/gpt-4o-mini",
             messages: [
-                { role: "user", content: message }
+                { role: "user", content: `Startup Idea: ${body.idea}\nUser Message: ${message}` }
             ],
         });
 
