@@ -67,7 +67,7 @@ npm run dev
 Visit:
 
 ```
-(https://startup-guru-mxjr.vercel.app/)
+https://startup-guru-mxjr.vercel.app/
 ```
 
 ---
