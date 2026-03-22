@@ -1,36 +1,147 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🚀 Startup Guru AI
 
-## Getting Started
+An AI-powered startup advisor that helps users validate, analyze, and improve their startup ideas instantly.
 
-First, run the development server:
+---
+
+## ✨ Overview
+
+Startup Guru AI acts like a virtual mentor for entrepreneurs.
+Users can input their startup ideas and receive:
+
+* ✅ Strengths of the idea
+* 🚀 A practical MVP plan
+
+This helps founders make faster, smarter decisions.
+
+---
+
+## 🔥 Features
+
+* 🧠 AI-powered idea analysis
+* 📈 Structured feedback 
+* 🚀 MVP planning guidance
+* 💬 Context-aware responses (supports previous ideas)
+* ⚡ Fast API response using Openrouter.ai
+
+---
+
+## 🛠️ Tech Stack
+
+* **Frontend:** Next.js
+* **Backend:** Next.js API Routes
+* **AI Engine:**  Openrouter.ai
+* **Runtime:** Node.js
+
+---
+
+## 📦 Installation
+
+```bash
+git clone https://github.com/amankandhal34/startup-guru-ai.git
+cd startup-guru-ai
+npm install
+```
+
+---
+
+## 🔐 Environment Setup
+
+Create a `.env.local` file in the root directory:
+
+```env
+OPENROUTER_API_KEY=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
+OPENROUTER_MODEL=openai/gpt-4o-mini
+```
+
+⚠️ Never expose your API key publicly.
+
+---
+
+## ▶️ Running the App
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Visit:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 📡 API Usage
 
-To learn more about Next.js, take a look at the following resources:
+### Endpoint:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+POST /api/chat
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Request Body:
 
-## Deploy on Vercel
+```json
+{
+  "message": "I want to build an AI fitness app",
+  "idea": ""
+}
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Response:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```json
+{
+  "reply": "Score: 8/10\nStrengths: ...\nRisks: ...\nMVP Plan: ..."
+}
+```
+
+---
+
+## 🧠 How It Works
+
+1. User submits a startup idea
+2. Backend creates a structured prompt
+3. Prompt is sent to Gemini AI
+4. AI returns detailed startup analysis
+5. Response is displayed to the user
+
+---
+
+## 🚀 Use Cases
+
+* 💡 Startup idea validation
+* 🧑‍💻 Hackathon projects
+* 📊 Business brainstorming
+* 🎓 Student entrepreneurship
+
+---
+
+## 🔮 Future Enhancements
+
+* 💾 Save chat history (database)
+* 📊 Market analysis integration
+* 📄 Export reports (PDF)
+* 🌐 Multi-language support
+* 🎨 Improved UI/UX
+
+---
+
+## ⚠️ Security
+
+* Store API keys in environment variables
+* Never expose secrets in frontend code
+* Rotate keys if compromised
+
+---
+
+## 👨‍💻 Author
+
+Built with ❤️ by Aman Kandhal
+
+---
+
+## 📄 License
+
+MIT License
